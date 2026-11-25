@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Climb to Safety</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Lora for narrative prose, Inter for headings and controls -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet" />
+
+  <style>
+    /* Base typography and dark canyon theme */
+    body {
+      font-family: 'Lora', Georgia, serif;
+      background-color: #0b1120;
+      color: #f1f5f9;
+      overflow-x: hidden;
+    }
+
+    h1, h2, h3, h4, nav, button, label, .ui-font {
+      font-family: 'Inter', system-ui, sans-serif;
+    }
+
+    /* Subtle CSS falling rain streaks in the hero banner */
+    .rain-container {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .raindrop {
+      position: absolute;
+      top: -45px;
+      width: 2px;
+      height: 30px;
+      background: linear-gradient(to bottom, transparent, rgba(125, 211, 252, 0.45));
+      border-radius: 999px;
+      animation: fall linear infinite;
+    }
+
+    @keyframes fall {
+      to {
+        transform: translateY(108vh);
+      }
+    }
+
+    /* Editorial drop cap for opening paragraph of each part */
+    .drop-cap::first-letter {
+      float: left;
+      font-size: 3.35rem;
+      line-height: 0.85;
+      padding-right: 0.65rem;
+      padding-top: 0.15rem;
+      font-weight: 700;
+      color: #facc15;
+    }
+
+    /* Car SVG rotates and lifts cleanly around its own bounding-box center */
+    #car-group {
+      transform-box: fill-box;
+      transform-origin: center center;
+      transition: transform 0.25s ease-out;
+    }
+
+    /* Climber SVG slides smoothly along the sloped canyon wall via CSS style.transform */
+    #climber-group {
+      transform: translate(274px, 285px);
+      transition: transform 0.35s ease-out;
+      will-change: transform;
+    }
+
+    /* Custom range slider styling */
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 8px;
+      background: #1e293b;
+      border-radius: 999px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #38bdf8;
+      border: 3px solid #0f172a;
+      cursor: pointer;
+      box-shadow: 0 0 0 2px #38bdf8;
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #38bdf8;
+      border: 3px solid #0f172a;
+      cursor: pointer;
+      box-shadow: 0 0 0 2px #38bdf8;
+    }
+  </style>
+</head>
+<body class="antialiased selection:bg-yellow-400 selection:text-slate-950">
+
+  <!-- =====================================================================
+       1. STICKY TOP NAVIGATION BAR & READING PROGRESS BAR
+  ====================================================================== -->
+  <header class="fixed top-0 left-0 right-0 z-50 bg-slate-950/95 backdrop-blur border-b border-slate-800">
+    <div class="max-w-4xl mx-auto px-4 h-12 flex items-center justify-between gap-3">
+      <a href="#top" class="ui-font font-bold text-sm text-white hover:text-yellow-400 transition whitespace-nowrap">
+        Climb to Safety
+      </a>
+
+      <nav aria-label="Story sections" class="flex items-center gap-3 sm:gap-5 text-xs text-slate-400 overflow-x-auto">
+        <a href="#part-1" class="nav-link hover:text-white transition whitespace-nowrap">Part I</a>
+        <a href="#part-2" class="nav-link hover:text-white transition whitespace-nowrap">Part II</a>
+        <a href="#part-3" class="nav-link hover:text-white transition whitespace-nowrap">Part III</a>
+        <a href="#part-4" class="nav-link hover:text-white transition whitespace-nowrap">Part IV</a>
+        <a href="#part-5" class="nav-link hover:text-white transition whitespace-nowrap">Part V</a>
+        <a href="#sources" class="nav-link hover:text-white transition whitespace-nowrap">Sources</a>
+      </nav>
+    </div>
+
+    <!-- Thin reading progress bar along bottom edge -->
+    <div class="w-full h-1 bg-slate-900">
+      <div id="progress-bar" class="h-full bg-yellow-400 w-0 transition-all duration-100"></div>
+    </div>
+  </header>
+
+  <!-- =====================================================================
+       2. FULL-BLEED ATMOSPHERIC HERO SECTION
+  ====================================================================== -->
+  <section id="top" class="relative min-h-screen flex flex-col justify-between items-center text-center px-5 pt-24 pb-10 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-900 border-b border-slate-800">
+    <!-- Subtle CSS Rain Streaks -->
+    <div id="rain-layer" class="rain-container" aria-hidden="true"></div>
+
+    <!-- Canyon Wall Silhouette SVG -->
+    <svg viewBox="0 0 1200 220" preserveAspectRatio="none" class="absolute bottom-0 left-0 w-full h-36 sm:h-48 pointer-events-none opacity-50" aria-hidden="true">
+      <polygon points="0,220 0,85 240,170 490,55 730,165 990,70 1200,145 1200,220" fill="#020617" />
+    </svg>
+
+    <!-- Top Context Pill -->
+    <div class="relative z-10 mt-4 flex items-center justify-center">
+      <span class="ui-font inline-block px-3.5 py-1.5 rounded-full text-xs font-semibold uppercase tracking-widest bg-slate-800/90 text-sky-300 border border-slate-700">
+        July 31, 1976 · Big Thompson Canyon, Colorado
+      </span>
+    </div>
+
+    <!-- Center Headline & Dek -->
+    <div class="relative z-10 max-w-2xl mx-auto my-auto py-10">
+      <h1 class="text-5xl sm:text-7xl font-extrabold tracking-tight text-white mb-6">
+        Climb to Safety
+      </h1>
+      <div class="w-16 h-1 bg-yellow-400 mx-auto mb-6 rounded-full"></div>
+      <p class="text-lg sm:text-2xl text-slate-200 leading-relaxed">
+        Fifty years ago, a storm that refused to move turned a Colorado canyon into a raging river in a single night. What separated the people who survived from the ones who did not came down to one simple choice.
+      </p>
+    </div>
+
+    <!-- Scroll Cue -->
+    <div class="relative z-10">
+      <a href="#part-1" class="ui-font inline-flex flex-col items-center gap-1.5 text-xs uppercase tracking-widest text-slate-400 hover:text-yellow-400 transition">
+        <span>Scroll to read ↓</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- =====================================================================
+       MAIN LONG-FORM MULTIMEDIA NARRATIVE
+  ====================================================================== -->
+  <main class="max-w-3xl mx-auto px-5 sm:px-8 py-16 space-y-20">
+
+    <!-- ===================================================================
+         3. PART I: THE RADIO CALL
+    ==================================================================== -->
+    <section id="part-1" class="space-y-6 scroll-mt-16">
+      <div>
+        <p class="ui-font text-xs font-bold uppercase tracking-widest text-yellow-400">Part I</p>
+        <h2 class="text-3xl sm:text-4xl font-bold text-white mt-1">The Radio Call</h2>
+      </div>
+
+      <!-- Visual-Only Dispatch Radio Card -->
+      <div class="rounded-2xl bg-slate-950 border border-slate-800 p-5 sm:p-6 shadow-lg space-y-4">
+        <div class="flex items-center gap-2.5 pb-3 border-b border-slate-800">
+          <span class="w-2.5 h-2.5 rounded-full bg-red-500"></span>
+          <span class="ui-font text-xs font-bold uppercase tracking-wider text-red-400">
+            SGT. WILLIS HUGH PURDY · BIG THOMPSON CANYON · ~9:15 P.M.
+          </span>
+        </div>
+
+        <!-- Purdy's 9:15 p.m. Transmission -->
+        <blockquote class="text-xl sm:text-2xl font-semibold leading-snug text-yellow-300 space-y-1">
+          <span class="block">"I'm stuck.</span>
+          <span class="block">I'm right in the middle of it.</span>
+          <span class="block">I can't get out..."</span>
+        </blockquote>
+      </div>
+
+      <!-- Exact Narrative Prose -->
+      <div class="text-lg leading-relaxed text-slate-200 space-y-5">
+        <p class="drop-cap">
+          Those were the last words anyone heard from Sgt. Willis Hugh Purdy. It was around 9:15 p.m. on July 31, 1976. He was in Big Thompson Canyon, and the river was rising fast around his patrol car. Before the water took him, he had warned dozens of people to get out and ordered evacuations lower in the canyon. That order is credited with saving hundreds of lives. He was never heard from again.
+        </p>
+        <p>
+          He was one of 144 people who died that night in what is still Colorado's deadliest natural disaster. Five people were never found. Researchers later found that surviving came down to one basic move. People had to get out of the water's path and go uphill. Lori Peek, director of the Natural Hazards Center at the University of Colorado Boulder, says the people who stayed in their vehicles faced the highest risk. This story is about that choice, and why it was so hard to make.
+        </p>
+      </div>
+    </section>
+
+    <hr class="border-slate-800" />
+
+    <!-- ===================================================================
+         4. PART II: THE CANYON
+    ==================================================================== -->
+    <section id="part-2" class="space-y-6 scroll-mt-16">
+      <div>
+        <p class="ui-font text-xs font-bold uppercase tracking-widest text-yellow-400">Part II</p>
+        <h2 class="text-3xl sm:text-4xl font-bold text-white mt-1">The Canyon</h2>
+      </div>
+
+      <!-- Exact Narrative Prose -->
+      <div class="text-lg leading-relaxed text-slate-200 space-y-5">
+        <p class="drop-cap">
+          July 31 was the night before Colorado's 100th birthday, and thousands of people had come to Big Thompson Canyon for the centennial weekend. An estimated 3,500 people were camping, fishing, and relaxing in the canyon that night. U.S. Highway 34 runs right beside the Big Thompson River between steep canyon walls. According to Denver Post archives, the river was usually only about 18 inches deep.
+        </p>
+        <p>
+          Above them, a massive storm stalled against the mountains. Up to 7.5 inches of rain fell in about an hour, and about 12 inches fell in just a few hours, according to the U.S. Geological Survey. The rocky, steep slopes could not hold it. "It was almost like a bathtub effect," said Neil Grigg, a civil and environmental engineering professor at Colorado State University.
+        </p>
+      </div>
+
+      <!-- Interactive Module: USGS Estimated Rainfall in the Canyon -->
+      <div class="rounded-2xl bg-slate-950 border border-slate-800 p-5 sm:p-6 shadow-lg space-y-5">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <h3 class="text-base sm:text-lg font-bold text-white">USGS Estimated Rainfall in the Canyon</h3>
+          <span id="rain-badge" class="ui-font px-3 py-1 rounded-lg bg-sky-500/20 text-sky-300 border border-sky-500/40 text-xs font-bold">
+            1-Hour Peak: Up to 7.5 in
+          </span>
+        </div>
+
+        <!-- 3 Working Toggle Buttons -->
+        <div class="flex flex-wrap gap-2">
+          <button id="btn-rain-zero" type="button" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 transition cursor-pointer">
+            0 in (Before Storm)
+          </button>
+          <button id="btn-rain-peak" type="button" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-sky-500 text-slate-950 transition cursor-pointer">
+            1-Hour Peak: Up to 7.5 in
+          </button>
+          <button id="btn-rain-total" type="button" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 transition cursor-pointer">
+            Total Storm: About 12.0 in
+          </button>
+        </div>
+
+        <!-- Canyon Basin Cross-Section SVG -->
+        <div class="bg-slate-900 rounded-xl border border-slate-800 p-3">
+          <svg viewBox="0 0 500 150" class="w-full h-auto block" role="img" aria-label="Cross-section illustration of steep canyon slopes and rising water">
+            <!-- Water inside Canyon Basin -->
+            <rect id="basin-water" x="90" y="85" width="320" height="50" fill="#0284c7" opacity="0.75" style="transition: all 0.4s ease;" />
+            <line id="basin-water-line" x1="90" y1="85" x2="410" y2="85" stroke="#38bdf8" stroke-width="2.5" style="transition: all 0.4s ease;" />
+
+            <!-- Left and Right Steep Slopes -->
+            <polygon points="0,15 135,15 195,135 0,135" fill="#1e293b" />
+            <polygon points="500,15 365,15 305,135 500,135" fill="#1e293b" />
+
+            <!-- Labels -->
+            <text x="68" y="75" text-anchor="middle" fill="#cbd5e1" font-family="Inter, sans-serif" font-size="11" font-weight="600">Steep Slopes</text>
+            <text x="432" y="75" text-anchor="middle" fill="#cbd5e1" font-family="Inter, sans-serif" font-size="11" font-weight="600">Steep Slopes</text>
+            <text x="250" y="125" text-anchor="middle" fill="#f8fafc" font-family="Inter, sans-serif" font-size="10" font-weight="600">Big Thompson River &amp; Hwy 34</text>
+
+            <!-- Ground Base -->
+            <rect x="0" y="135" width="500" height="15" fill="#020617" />
+          </svg>
+        </div>
+
+        <!-- Clickable Progress Bar Segments & Tick Buttons -->
+        <div>
+          <div id="rain-bar-track" title="Click along the bar to switch rainfall stages" class="w-full h-6 bg-slate-900 rounded-xl overflow-hidden border border-slate-800 p-1 cursor-pointer">
+            <div id="rain-bar" class="h-full bg-gradient-to-r from-sky-500 to-blue-400 rounded-lg transition-all duration-300" style="width: 62.5%;"></div>
+          </div>
+          <div class="flex justify-between ui-font text-xs text-slate-400 mt-1.5">
+            <button type="button" id="tick-rain-zero" class="hover:text-sky-300 transition cursor-pointer">0 in</button>
+            <button type="button" id="tick-rain-peak" class="hover:text-sky-300 transition cursor-pointer">7.5 in (1 hr)</button>
+            <button type="button" id="tick-rain-total" class="hover:text-sky-300 transition cursor-pointer">12 in (Total)</button>
+          </div>
+        </div>
+
+        <p id="rain-caption" class="text-sm sm:text-base text-slate-300">
+          Up to 7.5 inches of rain fell in about an hour, according to the U.S. Geological Survey. The rocky, steep slopes could not hold it.
+        </p>
+      </div>
+    </section>
+
+    <hr class="border-slate-800" />
+
+    <!-- ===================================================================
+         5. PART III: THE NIGHT
+    ==================================================================== -->
+    <section id="part-3" class="space-y-6 scroll-mt-16">
+      <div>
+        <p class="ui-font text-xs font-bold uppercase tracking-widest text-yellow-400">Part III</p>
+        <h2 class="text-3xl sm:text-4xl font-bold text-white mt-1">The Night</h2>
+      </div>
+
+      <!-- Interactive Module: Night Timeline Along the Canyon -->
+      <div class="rounded-2xl bg-slate-950 border border-slate-800 p-5 sm:p-6 shadow-lg space-y-5">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <h3 class="text-base sm:text-lg font-bold text-white">Night Timeline Along the Canyon</h3>
+          <div class="flex items-center gap-2">
+            <button id="timeline-prev" type="button" class="ui-font px-2.5 py-1 rounded-lg bg-slate-800 text-slate-200 hover:bg-slate-700 text-xs font-semibold transition cursor-pointer">
+              ← Previous
+            </button>
+            <span id="map-time-badge" class="ui-font px-3 py-1 rounded-lg bg-yellow-400 text-slate-950 text-xs font-bold">
+              5:00 PM
+            </span>
+            <button id="timeline-next" type="button" class="ui-font px-2.5 py-1 rounded-lg bg-slate-800 text-slate-200 hover:bg-slate-700 text-xs font-semibold transition cursor-pointer">
+              Next →
+            </button>
+          </div>
+        </div>
+
+        <!-- 8 Clickable Timestamp Buttons -->
+        <div id="timeline-tabs" class="flex flex-wrap gap-1.5">
+          <button type="button" data-step="0" class="time-tab px-3 py-1.5 rounded-lg text-xs font-semibold bg-yellow-400 text-slate-950 transition cursor-pointer">5:00 PM</button>
+          <button type="button" data-step="1" class="time-tab px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 transition cursor-pointer">6:30 PM</button>
+          <button type="button" data-step="2" class="time-tab px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 transition cursor-pointer">8:00 PM</button>
+          <button type="button" data-step="3" class="time-tab px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 transition cursor-pointer">8:45 PM</button>
+          <button type="button" data-step="4" class="time-tab px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 transition cursor-pointer">9:00 PM</button>
+          <button type="button" data-step="5" class="time-tab px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 transition cursor-pointer">9:15 PM</button>
+          <button type="button" data-step="6" class="time-tab px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 transition cursor-pointer">10:30 PM</button>
+          <button type="button" data-step="7" class="time-tab px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 transition cursor-pointer">11:00 PM</button>
+        </div>
+
+        <!-- Linear Canyon Corridor Diagram (Estes Park -> Drake -> Loveland) -->
+        <div class="bg-slate-900 rounded-xl p-4 border border-slate-800 space-y-2">
+          <div class="flex flex-wrap items-center justify-between gap-2 ui-font text-[10px] uppercase tracking-wider text-slate-400">
+            <span>← West (Upstream)</span>
+            <span id="map-scope-badge" class="px-2.5 py-0.5 rounded bg-yellow-400/15 text-yellow-300 border border-yellow-400/30 font-semibold">
+              Upper Canyon
+            </span>
+            <span>East (Canyon Mouth) →</span>
+          </div>
+
+          <svg viewBox="0 0 600 115" class="w-full h-auto" role="img" aria-label="Canyon corridor diagram from Estes Park through Drake to Loveland">
+            <!-- Base Canyon River & Highway 34 Corridor Track -->
+            <line x1="65" y1="56" x2="535" y2="56" stroke="#1e293b" stroke-width="5" stroke-linecap="round" />
+
+            <!-- Synced Active Segment Line -->
+            <line id="corridor-active-line" x1="65" y1="56" x2="180" y2="56" stroke="#facc15" stroke-width="5" stroke-linecap="round" style="transition: all 0.3s ease;" />
+
+            <!-- Town Highlight Halos -->
+            <circle id="halo-estes" cx="65" cy="56" r="18" fill="#facc15" opacity="0.30" style="transition: all 0.3s ease;" />
+            <circle id="halo-drake" cx="300" cy="56" r="0" fill="#facc15" opacity="0" style="transition: all 0.3s ease;" />
+            <circle id="halo-loveland" cx="535" cy="56" r="0" fill="#facc15" opacity="0" style="transition: all 0.3s ease;" />
+
+            <!-- Estes Park (Upstream) -->
+            <circle id="pin-estes" cx="65" cy="56" r="9" fill="#0f172a" stroke="#facc15" stroke-width="3" style="transition: all 0.3s ease;" />
+            <text id="label-estes" x="65" y="30" text-anchor="middle" fill="#facc15" font-family="Inter, sans-serif" font-size="11" font-weight="700">Estes Park</text>
+            <text x="65" y="84" text-anchor="middle" fill="#64748b" font-family="Inter, sans-serif" font-size="10">Upstream</text>
+
+            <!-- Drake (Center) -->
+            <circle id="pin-drake" cx="300" cy="56" r="7.5" fill="#0f172a" stroke="#94a3b8" stroke-width="2" style="transition: all 0.3s ease;" />
+            <text id="label-drake" x="300" y="30" text-anchor="middle" fill="#e2e8f0" font-family="Inter, sans-serif" font-size="11" font-weight="600">Drake</text>
+            <text x="300" y="84" text-anchor="middle" fill="#64748b" font-family="Inter, sans-serif" font-size="10">Mid-Canyon</text>
+
+            <!-- Loveland (Canyon Mouth) -->
+            <circle id="pin-loveland" cx="535" cy="56" r="7.5" fill="#0f172a" stroke="#94a3b8" stroke-width="2" style="transition: all 0.3s ease;" />
+            <text id="label-loveland" x="535" y="30" text-anchor="middle" fill="#e2e8f0" font-family="Inter, sans-serif" font-size="11" font-weight="600">Loveland</text>
+            <text x="535" y="84" text-anchor="middle" fill="#64748b" font-family="Inter, sans-serif" font-size="10">Canyon Mouth</text>
+          </svg>
+        </div>
+
+        <!-- Event Card Below Map -->
+        <div class="bg-slate-900/80 rounded-xl p-4 border border-slate-800 space-y-1">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <h4 id="timeline-title" class="font-bold text-white text-base">5:00 PM</h4>
+            <span id="timeline-location" class="ui-font text-xs font-semibold text-sky-400">Upper Canyon</span>
+          </div>
+          <p id="timeline-desc" class="text-sm sm:text-base text-slate-300">
+            Light rain started in the upper canyon around 5 p.m.
+          </p>
+        </div>
+      </div>
+
+      <!-- Exact Narrative Prose -->
+      <div class="text-lg leading-relaxed text-slate-200 space-y-5">
+        <p class="drop-cap">
+          Light rain started in the upper canyon around 5 p.m. and turned heavy by 6:30. Around 8, people began calling 911 about rocks on the highway, and a Colorado State Patrol trooper went to investigate. By 8:45, the heaviest rain began to fall, dumping as much as a year's worth of rain in an hour or two in many areas.
+        </p>
+        <p>
+          At 9 p.m., forecasters in Denver issued a bulletin warning of slow-moving thunderstorms that could cause local flooding. Fifteen minutes later, at 9:15, Purdy made his last radio call. Around 10:30, a wall of water nearly 20 feet tall tore down the canyon, and more than 400 cars were swept off the road that night. The National Weather Service issued its first flash-flood bulletin at 11 p.m., about thirty minutes after the main wave had already hit.
+        </p>
+      </div>
+    </section>
+
+    <hr class="border-slate-800" />
+
+    <!-- ===================================================================
+         6. PART IV: THE LEDGE
+    ==================================================================== -->
+    <section id="part-4" class="space-y-6 scroll-mt-16">
+      <div>
+        <p class="ui-font text-xs font-bold uppercase tracking-widest text-yellow-400">Part IV</p>
+        <h2 class="text-3xl sm:text-4xl font-bold text-white mt-1">The Ledge</h2>
+      </div>
+
+      <!-- Exact Narrative Prose -->
+      <div class="text-lg leading-relaxed text-slate-200 space-y-5">
+        <p class="drop-cap">
+          Connie Granath Hays and her friend Terry Belair were driving in the canyon when the floodwaters began rising around them. They abandoned their car and climbed the canyon wall to reach higher ground.
+        </p>
+        <p>
+          They held on until daybreak, when a helicopter finally lifted them out. Fifty years later, Granath Hays told Denver7 that the two of them came to realize how fortunate they were. Their choice was the simplest one available: leave the car and go up.
+        </p>
+      </div>
+
+      <!-- Interactive Module: From 18 Inches to Nearly 20 Feet -->
+      <div class="rounded-2xl bg-slate-950 border border-slate-800 p-5 sm:p-6 shadow-lg space-y-5">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <h3 class="text-base sm:text-lg font-bold text-white">From 18 Inches to Nearly 20 Feet</h3>
+          <span id="water-label" class="ui-font px-3 py-1 rounded-lg bg-sky-500/20 text-sky-300 border border-sky-500/40 text-sm font-bold">
+            1.5 ft (18 in)
+          </span>
+        </div>
+
+        <!-- 3 Preset Buttons -->
+        <div class="flex flex-wrap gap-2">
+          <button id="preset-normal" type="button" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-sky-500 text-slate-950 transition cursor-pointer">
+            Normal River: 18 in
+          </button>
+          <button id="preset-floating" type="button" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-200 hover:bg-slate-700 transition cursor-pointer">
+            Car Floating
+          </button>
+          <button id="preset-wave" type="button" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-200 hover:bg-slate-700 transition cursor-pointer">
+            Peak Wave: ~20 ft
+          </button>
+        </div>
+
+        <!-- Range Slider -->
+        <div>
+          <label for="water-slider" class="block text-xs text-slate-400 mb-2">
+            Drag the slider or use the buttons above to raise the river depth:
+          </label>
+          <input id="water-slider" type="range" min="1.5" max="20" step="0.5" value="1.5" />
+        </div>
+
+        <!-- Cross-Section Illustration SVG -->
+        <div class="space-y-2">
+          <div class="bg-slate-900 rounded-xl border border-slate-800 overflow-hidden">
+            <svg viewBox="0 0 500 310" class="w-full h-auto block" role="img" aria-label="Illustration of rising floodwater next to a car, a 6-foot person, and a sloped canyon wall ledge">
+              <!-- Subtle Reference Lines (Roadbed at y=285, 10px per foot) -->
+              <line x1="0" y1="285" x2="500" y2="285" stroke="#334155" stroke-width="1" />
+              <line x1="0" y1="225" x2="500" y2="225" stroke="#1e293b" stroke-dasharray="4 4" />
+              <line x1="0" y1="165" x2="500" y2="165" stroke="#1e293b" stroke-dasharray="4 4" />
+              <line x1="0" y1="85" x2="500" y2="85" stroke="#1e293b" stroke-dasharray="4 4" />
+
+              <text x="10" y="221" fill="#64748b" font-family="Inter, sans-serif" font-size="10">6 ft</text>
+              <text x="10" y="81" fill="#facc15" font-family="Inter, sans-serif" font-size="10">~20 ft</text>
+
+              <!-- Continuous Sloped Canyon Wall leading up to a Canyon Wall Ledge at y=70 -->
+              <polygon points="280,285 405,70 500,70 500,285" fill="#1e293b" />
+              <line x1="280" y1="285" x2="405" y2="70" stroke="#475569" stroke-width="2" />
+              <line x1="405" y1="70" x2="500" y2="70" stroke="#facc15" stroke-width="2.5" />
+              <text x="452" y="92" text-anchor="middle" fill="#facc15" font-family="Inter, sans-serif" font-size="10" font-weight="700">Canyon Wall Ledge</text>
+
+              <!-- Car Silhouette (Lifts and tilts smoothly around its own center) -->
+              <g id="car-group">
+                <rect x="75" y="255" width="110" height="22" rx="4" fill="#64748b" />
+                <rect x="95" y="237" width="68" height="20" rx="4" fill="#475569" />
+                <circle cx="100" cy="279" r="7" fill="#0f172a" stroke="#cbd5e1" stroke-width="2" />
+                <circle cx="160" cy="279" r="7" fill="#0f172a" stroke="#cbd5e1" stroke-width="2" />
+                <text x="130" y="229" text-anchor="middle" fill="#cbd5e1" font-family="Inter, sans-serif" font-size="10">Car</text>
+              </g>
+
+              <!-- 6-ft Person Reference Silhouette on Road -->
+              <g transform="translate(215, 225)">
+                <circle cx="10" cy="7" r="5" fill="#94a3b8" />
+                <line x1="10" y1="12" x2="10" y2="38" stroke="#94a3b8" stroke-width="3" />
+                <line x1="10" y1="20" x2="2" y2="32" stroke="#94a3b8" stroke-width="2" />
+                <line x1="10" y1="20" x2="18" y2="32" stroke="#94a3b8" stroke-width="2" />
+                <line x1="10" y1="38" x2="5" y2="58" stroke="#94a3b8" stroke-width="2.5" />
+                <line x1="10" y1="38" x2="15" y2="58" stroke="#94a3b8" stroke-width="2.5" />
+                <text x="10" y="-6" text-anchor="middle" fill="#94a3b8" font-family="Inter, sans-serif" font-size="10">6 ft</text>
+              </g>
+
+              <!-- Climber Figure (Origin at feet (0,0), slides smoothly via CSS style.transform) -->
+              <g id="climber-group">
+                <circle cx="0" cy="-31" r="4.5" fill="#facc15" />
+                <line x1="0" y1="-26" x2="0" y2="-11" stroke="#facc15" stroke-width="2.5" />
+                <line x1="0" y1="-21" x2="-6" y2="-14" stroke="#facc15" stroke-width="2" />
+                <line x1="0" y1="-21" x2="6" y2="-14" stroke="#facc15" stroke-width="2" />
+                <line x1="0" y1="-11" x2="-4" y2="0" stroke="#facc15" stroke-width="2" />
+                <line x1="0" y1="-11" x2="4" y2="0" stroke="#facc15" stroke-width="2" />
+              </g>
+
+              <!-- Rising Water Layer -->
+              <rect id="water-box" x="0" y="270" width="500" height="15" fill="#0284c7" opacity="0.72" />
+              <line id="water-top-line" x1="0" y1="270" x2="500" y2="270" stroke="#38bdf8" stroke-width="2.5" />
+
+              <!-- Roadbed & River Channel Base -->
+              <rect x="0" y="285" width="500" height="25" fill="#020617" />
+            </svg>
+          </div>
+          <p class="ui-font text-xs text-slate-400 italic text-right">
+            Illustration, not to scale.
+          </p>
+        </div>
+
+        <!-- Live Water Depth Status Note -->
+        <p id="water-status-text" class="text-sm sm:text-base text-slate-300">
+          Normal river depth: the Big Thompson River was usually only about 18 inches deep beside U.S. Highway 34.
+        </p>
+      </div>
+    </section>
+
+    <hr class="border-slate-800" />
+
+    <!-- ===================================================================
+         7. PART V: THE MORNING AFTER
+    ==================================================================== -->
+    <section id="part-5" class="space-y-6 scroll-mt-16">
+      <div>
+        <p class="ui-font text-xs font-bold uppercase tracking-widest text-yellow-400">Part V</p>
+        <h2 class="text-3xl sm:text-4xl font-bold text-white mt-1">The Morning After</h2>
+      </div>
+
+      <!-- Exact Narrative Prose -->
+      <div class="text-lg leading-relaxed text-slate-200 space-y-5">
+        <p class="drop-cap">
+          When the sun came up on August 1, helicopters airlifted more than 800 survivors off ledges and rooftops, while at least 250 people were treated for injuries. In Loveland, refrigerated trucks were parked outside the hospital to serve as temporary morgue space. In the end, 144 people were dead, and U.S. Geological Survey records show the flood destroyed 418 homes and 52 businesses. Estes Park Officer Michael Conley also drowned while helping victims, along with Purdy. Five people were never found: Teresa Graham, 10, Evelyn Kindred, 67, George McCarty, 21, Vernon Oler, 51, and Rochelle Rogers, 2.
+        </p>
+        <p>
+          Research from Eve Gruntfest's 1977 study helped lead to the yellow warning signs now posted along Highway 34 and in canyons across Colorado. They read, "In case of flash flood, climb to safety." Peek says the sign has lasted because it tells people clearly what to do.
+        </p>
+        <p>
+          The sign does not ask anyone to read a rain gauge or judge the sky. It asks them to go up. Almost everything about that night was complicated. The one thing that was not was where to go.
+        </p>
+      </div>
+
+      <!-- Visual Yellow Colorado Highway Hazard Sign Card & Memorial Summary Card -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 items-stretch">
+        <!-- Yellow Colorado Highway Sign -->
+        <div class="flex items-center justify-center rounded-2xl bg-slate-950 border border-slate-800 p-6">
+          <div class="bg-yellow-400 text-slate-950 rounded-2xl p-2 shadow-lg w-full max-w-xs">
+            <div class="border-4 border-slate-950 rounded-xl px-5 py-6 text-center">
+              <p class="ui-font font-extrabold text-base tracking-wide uppercase">
+                IN CASE OF FLASH FLOOD
+              </p>
+              <div class="h-0.5 bg-slate-950/30 my-2.5"></div>
+              <p class="ui-font font-black text-2xl tracking-tight uppercase">
+                CLIMB TO SAFETY
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Memorial Summary Card -->
+        <div class="rounded-2xl bg-slate-950 border border-slate-800 p-6 flex flex-col justify-between space-y-4">
+          <div>
+            <h3 class="text-lg font-bold text-white">Remembering July 31, 1976</h3>
+            <div class="grid grid-cols-2 gap-3 my-4">
+              <div class="bg-slate-900 rounded-xl p-3 border border-slate-800">
+                <span class="ui-font block text-2xl font-extrabold text-yellow-400">144</span>
+                <span class="ui-font text-xs text-slate-400">Lives Lost</span>
+              </div>
+              <div class="bg-slate-900 rounded-xl p-3 border border-slate-800">
+                <span class="ui-font block text-2xl font-extrabold text-sky-400">800+</span>
+                <span class="ui-font text-xs text-slate-400">Rescued by Helicopter</span>
+              </div>
+              <div class="bg-slate-900 rounded-xl p-3 border border-slate-800">
+                <span class="ui-font block text-2xl font-extrabold text-white">418</span>
+                <span class="ui-font text-xs text-slate-400">Homes Destroyed</span>
+              </div>
+              <div class="bg-slate-900 rounded-xl p-3 border border-slate-800">
+                <span class="ui-font block text-2xl font-extrabold text-white">52</span>
+                <span class="ui-font text-xs text-slate-400">Businesses Destroyed</span>
+              </div>
+            </div>
+            <p class="ui-font text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
+              THE FIVE NEVER FOUND
+            </p>
+            <p class="text-sm text-slate-300 leading-relaxed">
+              Teresa Graham, 10 · Evelyn Kindred, 67 · George McCarty, 21 · Vernon Oler, 51 · Rochelle Rogers, 2
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="border-slate-800" />
+
+    <!-- ===================================================================
+         8. SOURCES SECTION
+    ==================================================================== -->
+    <section id="sources" class="space-y-6 scroll-mt-16 pb-12">
+      <div>
+        <p class="ui-font text-xs font-bold uppercase tracking-widest text-yellow-400">Documentation</p>
+        <h2 class="text-3xl sm:text-4xl font-bold text-white mt-1">Sources</h2>
+      </div>
+
+      <div class="rounded-2xl bg-slate-950 border border-slate-800 p-5 sm:p-6 shadow-lg">
+        <ol class="list-decimal list-inside divide-y divide-slate-800/80 text-sm sm:text-base text-slate-300">
+          <li class="py-4 first:pt-0">
+            <span class="ui-font font-semibold text-white">The Gazette</span>, "40 years later: Remembering the Big Thompson Flood" (published August 6, 2016, by Jason Pohl):
+            <a href="https://gazette.com/?p=1082988" target="_blank" rel="noopener noreferrer" class="ui-font text-sky-400 hover:text-sky-300 underline underline-offset-4 break-all transition">
+              https://gazette.com/?p=1082988
+            </a>
+          </li>
+
+          <li class="py-4">
+            <span class="ui-font font-semibold text-white">USGS Fact Sheet 2006-3095</span>:
+            <a href="https://pubs.usgs.gov/publication/fs20063095" target="_blank" rel="noopener noreferrer" class="ui-font text-sky-400 hover:text-sky-300 underline underline-offset-4 break-all transition">
+              https://pubs.usgs.gov/publication/fs20063095
+            </a>
+          </li>
+
+          <li class="py-4">
+            <span class="ui-font font-semibold text-white">USGS General Information Product 35</span>:
+            <a href="https://pubs.usgs.gov/gip/2006/35/pdf/GIP-35_screen.pdf" target="_blank" rel="noopener noreferrer" class="ui-font text-sky-400 hover:text-sky-300 underline underline-offset-4 break-all transition">
+              https://pubs.usgs.gov/gip/2006/35/pdf/GIP-35_screen.pdf
+            </a>
+          </li>
+
+          <li class="py-4">
+            <span class="ui-font font-semibold text-white">Denver7</span>, "Big Thompson Canyon Flood survivors mark 50 years" (published July 31, 2026):
+            <a href="https://denver7.com/news/local-news/big-thompson-canyon-flood-survivors-mark-50-years-since-colorados-deadliest-natural-disaster" target="_blank" rel="noopener noreferrer" class="ui-font text-sky-400 hover:text-sky-300 underline underline-offset-4 break-all transition">
+              https://denver7.com/news/local-news/big-thompson-canyon-flood-survivors-mark-50-years-since-colorados-deadliest-natural-disaster
+            </a>
+          </li>
+
+          <li class="py-4">
+            <span class="ui-font font-semibold text-white">KUNC</span>, "A look back at the Big Thompson Flood, 50 years later":
+            <a href="https://www.kunc.org/news/2026-07-31/a-look-back-at-the-big-thompson-flood-50-years-later" target="_blank" rel="noopener noreferrer" class="ui-font text-sky-400 hover:text-sky-300 underline underline-offset-4 break-all transition">
+              https://www.kunc.org/news/2026-07-31/a-look-back-at-the-big-thompson-flood-50-years-later
+            </a>
+          </li>
+
+          <li class="py-4">
+            <span class="ui-font font-semibold text-white">CU Boulder Natural Hazards Center</span>, "Why Remembering the Big Thompson Flood of 1976 Matters Today":
+            <a href="https://hazards.colorado.edu/news/center-news/why-remembering-the-big-thompson-flood-of-1976-matters-today" target="_blank" rel="noopener noreferrer" class="ui-font text-sky-400 hover:text-sky-300 underline underline-offset-4 break-all transition">
+              https://hazards.colorado.edu/news/center-news/why-remembering-the-big-thompson-flood-of-1976-matters-today
+            </a>
+          </li>
+
+          <li class="py-4">
+            <span class="ui-font font-semibold text-white">Colorado National Guard</span>, "The Night the Sky Collapsed":
+            <a href="https://co.ng.mil/News/Archives/Article/4561952/the-night-the-sky-collapsed-the-1976-big-thompson-canyon-flood/" target="_blank" rel="noopener noreferrer" class="ui-font text-sky-400 hover:text-sky-300 underline underline-offset-4 break-all transition">
+              https://co.ng.mil/News/Archives/Article/4561952/the-night-the-sky-collapsed-the-1976-big-thompson-canyon-flood/
+            </a>
+          </li>
+
+          <li class="py-4 last:pb-0">
+            <span class="ui-font font-semibold text-white">Denver Gazette</span>, "Remembering the Big Thompson Canyon flood" (published July 2, 2021):
+            <a href="https://www.denvergazette.com/2021/07/02/remembering-the-big-thompson-canyon-flood-colorados-deadliest-natural-disaster/" target="_blank" rel="noopener noreferrer" class="ui-font text-sky-400 hover:text-sky-300 underline underline-offset-4 break-all transition">
+              https://www.denvergazette.com/2021/07/02/remembering-the-big-thompson-canyon-flood-colorados-deadliest-natural-disaster/
+            </a>
+          </li>
+        </ol>
+      </div>
+    </section>
+  </main>
+
+  <!-- =====================================================================
+       CLEAN, SELF-CONTAINED VANILLA JAVASCRIPT
+  ====================================================================== -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // -------------------------------------------------------------------
+      // 1. HERO CSS RAIN STREAKS
+      // -------------------------------------------------------------------
+      const rainLayer = document.getElementById('rain-layer');
+      if (rainLayer) {
+        const dropCount = 45;
+        for (let i = 0; i < dropCount; i++) {
+          const drop = document.createElement('div');
+          drop.className = 'raindrop';
+          drop.style.left = Math.random() * 100 + '%';
+          drop.style.animationDuration = (0.7 + Math.random() * 0.7) + 's';
+          drop.style.animationDelay = (Math.random() * 1.5) + 's';
+          drop.style.opacity = (0.25 + Math.random() * 0.45).toFixed(2);
+          rainLayer.appendChild(drop);
+        }
+      }
+
+      // -------------------------------------------------------------------
+      // 2. STICKY TOP READING PROGRESS BAR & ACTIVE SECTION HIGHLIGHT
+      // -------------------------------------------------------------------
+      const progressBar = document.getElementById('progress-bar');
+      const navLinks = document.querySelectorAll('.nav-link');
+      const sections = ['part-1', 'part-2', 'part-3', 'part-4', 'part-5', 'sources'].map(id => document.getElementById(id));
+
+      function updateScrollUI() {
+        const scrollTop = window.scrollY;
+        const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+        const pct = docHeight > 0 ? Math.min(100, Math.max(0, (scrollTop / docHeight) * 100)) : 0;
+        if (progressBar) {
+          progressBar.style.width = pct + '%';
+        }
+
+        let currentId = '';
+        sections.forEach(sec => {
+          if (sec && scrollTop >= sec.offsetTop - 160) {
+            currentId = sec.id;
+          }
+        });
+
+        navLinks.forEach(link => {
+          const href = link.getAttribute('href');
+          if (href === '#' + currentId) {
+            link.classList.add('text-yellow-400', 'font-semibold');
+            link.classList.remove('text-slate-400');
+          } else {
+            link.classList.remove('text-yellow-400', 'font-semibold');
+            link.classList.add('text-slate-400');
+          }
+        });
+      }
+
+      window.addEventListener('scroll', updateScrollUI, { passive: true });
+      updateScrollUI();
+
+      // -------------------------------------------------------------------
+      // 3. PART II: USGS ESTIMATED RAINFALL IN THE CANYON
+      // -------------------------------------------------------------------
+      const btnRainZero = document.getElementById('btn-rain-zero');
+      const btnRainPeak = document.getElementById('btn-rain-peak');
+      const btnRainTotal = document.getElementById('btn-rain-total');
+      const rainBarTrack = document.getElementById('rain-bar-track');
+      const tickRainZero = document.getElementById('tick-rain-zero');
+      const tickRainPeak = document.getElementById('tick-rain-peak');
+      const tickRainTotal = document.getElementById('tick-rain-total');
+      const rainBadge = document.getElementById('rain-badge');
+      const rainBar = document.getElementById('rain-bar');
+      const rainCaption = document.getElementById('rain-caption');
+      const basinWater = document.getElementById('basin-water');
+      const basinWaterLine = document.getElementById('basin-water-line');
+
+      function setRainMode(mode) {
+        const activeBtn = 'px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-sky-500 text-slate-950 transition cursor-pointer';
+        const inactiveBtn = 'px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 transition cursor-pointer';
+
+        btnRainZero.className = mode === 'zero' ? activeBtn : inactiveBtn;
+        btnRainPeak.className = mode === 'peak' ? activeBtn : inactiveBtn;
+        btnRainTotal.className = mode === 'total' ? activeBtn : inactiveBtn;
+
+        if (mode === 'zero') {
+          rainBadge.textContent = '0 in (Before Storm)';
+          rainBar.style.width = '0%';
+          basinWater.setAttribute('y', '131');
+          basinWater.setAttribute('height', '4');
+          basinWaterLine.setAttribute('y1', '131');
+          basinWaterLine.setAttribute('y2', '131');
+          rainCaption.textContent = 'Before 5 p.m., the Big Thompson River was usually only about 18 inches deep between steep canyon walls.';
+        } else if (mode === 'peak') {
+          rainBadge.textContent = '1-Hour Peak: Up to 7.5 in';
+          rainBar.style.width = '62.5%';
+          basinWater.setAttribute('y', '85');
+          basinWater.setAttribute('height', '50');
+          basinWaterLine.setAttribute('y1', '85');
+          basinWaterLine.setAttribute('y2', '85');
+          rainCaption.textContent = 'Up to 7.5 inches of rain fell in about an hour, according to the U.S. Geological Survey. The rocky, steep slopes could not hold it.';
+        } else {
+          rainBadge.textContent = 'Total Storm: About 12.0 in';
+          rainBar.style.width = '100%';
+          basinWater.setAttribute('y', '48');
+          basinWater.setAttribute('height', '87');
+          basinWaterLine.setAttribute('y1', '48');
+          basinWaterLine.setAttribute('y2', '48');
+          rainCaption.textContent = 'About 12 inches fell in just a few hours, according to the U.S. Geological Survey, turning a normal 18-inch river into a violent torrent.';
+        }
+      }
+
+      if (btnRainZero && btnRainPeak && btnRainTotal) {
+        btnRainZero.addEventListener('click', () => setRainMode('zero'));
+        btnRainPeak.addEventListener('click', () => setRainMode('peak'));
+        btnRainTotal.addEventListener('click', () => setRainMode('total'));
+      }
+
+      if (tickRainZero) tickRainZero.addEventListener('click', () => setRainMode('zero'));
+      if (tickRainPeak) tickRainPeak.addEventListener('click', () => setRainMode('peak'));
+      if (tickRainTotal) tickRainTotal.addEventListener('click', () => setRainMode('total'));
+
+      if (rainBarTrack) {
+        rainBarTrack.addEventListener('click', (e) => {
+          const rect = rainBarTrack.getBoundingClientRect();
+          const ratio = (e.clientX - rect.left) / rect.width;
+          if (ratio < 0.3) {
+            setRainMode('zero');
+          } else if (ratio < 0.8) {
+            setRainMode('peak');
+          } else {
+            setRainMode('total');
+          }
+        });
+      }
+
+      // -------------------------------------------------------------------
+      // 4. PART III: NIGHT TIMELINE ALONG THE CANYON (All 8 Timestamps)
+      // -------------------------------------------------------------------
+      const timelineSteps = [
+        {
+          time: '5:00 PM',
+          location: 'Upper Canyon',
+          title: '5:00 PM',
+          desc: 'Light rain started in the upper canyon around 5 p.m.',
+          towns: ['estes'],
+          x1: 65,
+          x2: 180
+        },
+        {
+          time: '6:30 PM',
+          location: 'Upper Canyon',
+          title: '6:30 PM',
+          desc: 'By 6:30 p.m., the rain turned heavy.',
+          towns: ['estes', 'drake'],
+          x1: 65,
+          x2: 300
+        },
+        {
+          time: '8:00 PM',
+          location: 'U.S. Highway 34',
+          title: '8:00 PM',
+          desc: 'Around 8 p.m., people began calling 911 about rocks on the highway, and a Colorado State Patrol trooper went to investigate.',
+          towns: ['estes', 'drake'],
+          x1: 65,
+          x2: 300
+        },
+        {
+          time: '8:45 PM',
+          location: 'Big Thompson Canyon',
+          title: '8:45 PM',
+          desc: "By 8:45 p.m., the heaviest rain began to fall, dumping as much as a year's worth of rain in an hour or two in many areas.",
+          towns: ['estes', 'drake', 'loveland'],
+          x1: 65,
+          x2: 535
+        },
+        {
+          time: '9:00 PM',
+          location: 'Denver / Canyon',
+          title: '9:00 PM',
+          desc: 'At 9 p.m., forecasters in Denver issued a bulletin warning of slow-moving thunderstorms that could cause local flooding.',
+          towns: ['estes', 'drake', 'loveland'],
+          x1: 65,
+          x2: 535
+        },
+        {
+          time: '9:15 PM',
+          location: 'Big Thompson Canyon',
+          title: '9:15 PM',
+          desc: 'Fifteen minutes later, at 9:15 p.m., Sgt. Willis Hugh Purdy made his last radio call before the water took him.',
+          towns: ['drake'],
+          x1: 245,
+          x2: 355
+        },
+        {
+          time: '10:30 PM',
+          location: 'Down the Canyon',
+          title: '10:30 PM',
+          desc: 'Around 10:30 p.m., a wall of water nearly 20 feet tall tore down the canyon.',
+          towns: ['drake', 'loveland'],
+          x1: 300,
+          x2: 535
+        },
+        {
+          time: '11:00 PM',
+          location: 'Entire Canyon',
+          title: '11:00 PM',
+          desc: 'The National Weather Service issued its first flash-flood bulletin at 11 p.m., about thirty minutes after the main wave had already hit.',
+          towns: ['estes', 'drake', 'loveland'],
+          x1: 65,
+          x2: 535
+        }
+      ];
+
+      let currentStep = 0;
+      const timeTabs = document.querySelectorAll('.time-tab');
+      const prevBtn = document.getElementById('timeline-prev');
+      const nextBtn = document.getElementById('timeline-next');
+      const mapTimeBadge = document.getElementById('map-time-badge');
+      const mapScopeBadge = document.getElementById('map-scope-badge');
+      const corridorActiveLine = document.getElementById('corridor-active-line');
+      const timelineTitle = document.getElementById('timeline-title');
+      const timelineLocation = document.getElementById('timeline-location');
+      const timelineDesc = document.getElementById('timeline-desc');
+
+      const townElements = {
+        estes: {
+          halo: document.getElementById('halo-estes'),
+          pin: document.getElementById('pin-estes'),
+          label: document.getElementById('label-estes')
+        },
+        drake: {
+          halo: document.getElementById('halo-drake'),
+          pin: document.getElementById('pin-drake'),
+          label: document.getElementById('label-drake')
+        },
+        loveland: {
+          halo: document.getElementById('halo-loveland'),
+          pin: document.getElementById('pin-loveland'),
+          label: document.getElementById('label-loveland')
+        }
+      };
+
+      function renderTimelineStep(index) {
+        currentStep = index;
+        const step = timelineSteps[index];
+
+        mapTimeBadge.textContent = step.time;
+        timelineTitle.textContent = step.title;
+        timelineLocation.textContent = step.location;
+        timelineDesc.textContent = step.desc;
+
+        if (mapScopeBadge) {
+          mapScopeBadge.textContent = step.location;
+        }
+
+        if (corridorActiveLine) {
+          corridorActiveLine.setAttribute('x1', step.x1);
+          corridorActiveLine.setAttribute('x2', step.x2);
+        }
+
+        Object.keys(townElements).forEach((townKey) => {
+          const el = townElements[townKey];
+          const isActive = step.towns.includes(townKey);
+
+          if (isActive) {
+            el.halo.setAttribute('r', '18');
+            el.halo.setAttribute('opacity', '0.30');
+            el.pin.setAttribute('r', '9');
+            el.pin.setAttribute('stroke', '#facc15');
+            el.pin.setAttribute('stroke-width', '3');
+            el.label.setAttribute('fill', '#facc15');
+          } else {
+            el.halo.setAttribute('r', '0');
+            el.halo.setAttribute('opacity', '0');
+            el.pin.setAttribute('r', '7.5');
+            el.pin.setAttribute('stroke', '#94a3b8');
+            el.pin.setAttribute('stroke-width', '2');
+            el.label.setAttribute('fill', '#e2e8f0');
+          }
+        });
+
+        timeTabs.forEach((tab, idx) => {
+          if (idx === index) {
+            tab.className = 'time-tab px-3 py-1.5 rounded-lg text-xs font-semibold bg-yellow-400 text-slate-950 transition cursor-pointer';
+          } else {
+            tab.className = 'time-tab px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 transition cursor-pointer';
+          }
+        });
+      }
+
+      timeTabs.forEach((tab) => {
+        tab.addEventListener('click', () => {
+          const stepIndex = parseInt(tab.getAttribute('data-step'), 10);
+          if (!isNaN(stepIndex)) {
+            renderTimelineStep(stepIndex);
+          }
+        });
+      });
+
+      if (prevBtn) {
+        prevBtn.addEventListener('click', () => {
+          const nextIdx = (currentStep - 1 + timelineSteps.length) % timelineSteps.length;
+          renderTimelineStep(nextIdx);
+        });
+      }
+
+      if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+          const nextIdx = (currentStep + 1) % timelineSteps.length;
+          renderTimelineStep(nextIdx);
+        });
+      }
+
+      // -------------------------------------------------------------------
+      // 5. PART IV: WATER-LEVEL COMPARISON SLIDER & SMOOTH SLOPE CLIMBER
+      // -------------------------------------------------------------------
+      const waterSlider = document.getElementById('water-slider');
+      const waterLabel = document.getElementById('water-label');
+      const waterBox = document.getElementById('water-box');
+      const waterTopLine = document.getElementById('water-top-line');
+      const carGroup = document.getElementById('car-group');
+      const climberGroup = document.getElementById('climber-group');
+      const waterStatusText = document.getElementById('water-status-text');
+
+      const presetNormal = document.getElementById('preset-normal');
+      const presetFloating = document.getElementById('preset-floating');
+      const presetWave = document.getElementById('preset-wave');
+
+      function updateWaterPresetButtons(ft) {
+        const activeClass = 'px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-sky-500 text-slate-950 transition cursor-pointer';
+        const inactiveClass = 'px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-200 hover:bg-slate-700 transition cursor-pointer';
+
+        presetNormal.className = ft <= 2 ? activeClass : inactiveClass;
+        presetFloating.className = (ft > 2 && ft < 18) ? activeClass : inactiveClass;
+        presetWave.className = ft >= 18 ? activeClass : inactiveClass;
+      }
+
+      function updateWaterLevel(ft) {
+        const clamped = Math.min(20, Math.max(1.5, ft));
+        waterSlider.value = clamped;
+
+        // Roadbed is at y = 285, 10px per foot (20 ft = y 85, below the y=70 ledge)
+        const heightPx = clamped * 10;
+        const topY = 285 - heightPx;
+
+        waterBox.setAttribute('y', topY);
+        waterBox.setAttribute('height', heightPx);
+        waterTopLine.setAttribute('y1', topY);
+        waterTopLine.setAttribute('y2', topY);
+
+        waterLabel.textContent = clamped === 1.5 ? '1.5 ft (18 in)' : clamped.toFixed(1) + ' ft';
+
+        // Car lifts and tilts smoothly around its own center once water passes ~3.5 ft
+        if (clamped >= 3.5) {
+          const lift = Math.min((clamped - 3) * 8.5, 110);
+          carGroup.style.transform = `translateY(-${lift}px) rotate(-11deg)`;
+        } else {
+          carGroup.style.transform = 'translateY(0px) rotate(0deg)';
+        }
+
+        // Climber slides smoothly via CSS style.transform along the continuous sloped wall
+        // from road (274px, 285px) up the slope line (280,285) -> (405,70) and onto the Canyon Wall Ledge (433px, 70px)
+        if (climberGroup) {
+          const progress = Math.min(1, Math.max(0, (clamped - 1.5) / 14.5));
+          let cx, cy;
+          if (progress <= 0) {
+            cx = 274;
+            cy = 285;
+          } else if (progress < 0.85) {
+            const slopeT = progress / 0.85;
+            cx = 278 + slopeT * (405 - 278);
+            cy = 285 - slopeT * (285 - 70);
+          } else {
+            const ledgeT = (progress - 0.85) / 0.15;
+            cx = 405 + ledgeT * 28;
+            cy = 70;
+          }
+          climberGroup.style.transform = `translate(${cx.toFixed(1)}px, ${cy.toFixed(1)}px)`;
+        }
+
+        if (clamped < 2) {
+          waterStatusText.textContent = 'Normal river depth: the Big Thompson River was usually only about 18 inches deep beside U.S. Highway 34.';
+        } else if (clamped < 6) {
+          waterStatusText.textContent = 'At ' + clamped.toFixed(1) + ' feet, water rises above the road and begins lifting cars off the pavement.';
+        } else if (clamped < 15) {
+          waterStatusText.textContent = 'At ' + clamped.toFixed(1) + ' feet, cars are swept off the road while climbers move higher up the canyon wall.';
+        } else {
+          waterStatusText.textContent = 'Around 10:30 p.m., a wall of water nearly 20 feet tall tore down the canyon. Climbing high up the canyon wall kept survivors above the water.';
+        }
+
+        updateWaterPresetButtons(clamped);
+      }
+
+      if (waterSlider) {
+        waterSlider.addEventListener('input', () => {
+          updateWaterLevel(parseFloat(waterSlider.value));
+        });
+      }
+
+      if (presetNormal) {
+        presetNormal.addEventListener('click', () => updateWaterLevel(1.5));
+      }
+
+      if (presetFloating) {
+        presetFloating.addEventListener('click', () => updateWaterLevel(5.0));
+      }
+
+      if (presetWave) {
+        presetWave.addEventListener('click', () => updateWaterLevel(20.0));
+      }
+    });
+  </script>
+</body>
+</html>
